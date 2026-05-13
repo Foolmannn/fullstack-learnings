@@ -21,7 +21,7 @@ export async function connectToDatabase(){
     }
     if(!cached.promise){
         const opts = {
-            bufferCommands:true,
+            bufferCommands:false,
             maxPoolSize : 10
         }
         cached.promise = mongoose.connect(MONGODB_URI,opts).then(()=>mongoose.connection)
@@ -37,3 +37,13 @@ export async function connectToDatabase(){
     return cached.conn
     
 }
+// Why This Pattern?
+
+// In development, Next.js reloads frequently.
+
+// Without caching:
+
+// Multiple DB connections are created
+// MongoDB may crash or slow down
+
+// This caching pattern avoids reconnecting repeatedly.
