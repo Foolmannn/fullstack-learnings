@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const MONGODB_URI = process.env.MONGODB_URI!;
-
+console.log(MONGODB_URI)
 if (!MONGODB_URI) {
   throw new Error(
     "Please define the MONGODB_URI environment variable inside .env"
@@ -29,6 +29,8 @@ export async function connectToDatabase() {
       .connect(MONGODB_URI, opts)
       .then(() => mongoose.connection);
   }
+
+  console.log(cached)
 
   try {
     cached.conn = await cached.promise;

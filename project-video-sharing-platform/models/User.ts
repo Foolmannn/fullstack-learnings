@@ -1,30 +1,100 @@
-import mongoose,{model,models, Schema} from "mongoose";
-import bcrypt from "bcryptjs";
+import mongoose, {
+    Schema,
+    model,
+    models,
+    HydratedDocument
+}
+    from "mongoose";
+
+import bcrypt
+    from "bcryptjs";
 
 
-export interface IUser{
+export interface IUser {
+
     email: string;
-    password:string;
-    _id?: mongoose.Types.ObjectId;
+
+    password: string;
+
     createdAt?: Date;
-    updatedAt?:Date
+
+    updatedAt?: Date;
+
 }
 
-const userSchema = new Schema<IUser>(
-    {
-        email:{type:String,required:true, unique:true},
-        password:{type:String,required:true}
-    },
-    {timestamps:true}
-)
-// here pre hook runs and hashing of the password is done when the password is changed/ modified  .
-userSchema.pre("save", async function(next){
-    if(this.isModified("password")){
-        this.password = await bcrypt.hash(this.password,10)
-    }
-    
-})
 
-const User = models?.User || model<IUser>("User",userSchema) // if the model already exist  then avoid recreation 
+const userSchema =
+    new Schema<IUser>(
+        {
+
+            email: {
+
+                type: String,
+
+                required: true,
+
+                unique: true,
+
+                lowercase: true,
+
+                trim: true
+
+            },
+
+            password: {
+
+                type: String,
+
+                required: true
+
+            }
+
+        },
+
+        {
+
+            timestamps: true
+
+        }
+
+    );
+
+
+userSchema.pre(
+    "save",
+
+    async function (
+        this:
+            HydratedDocument<IUser>
+    ) {
+
+        if (
+            this.isModified(
+                "password"
+            )
+        ) {
+
+            this.password =
+                await bcrypt.hash(
+                    this.password,
+                    10
+                );
+
+        }
+
+    }
+
+);
+
+
+const User =
+
+    models.User ||
+
+    model<IUser>(
+        "User",
+        userSchema
+    );
+
 
 export default User;

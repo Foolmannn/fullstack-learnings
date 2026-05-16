@@ -2,9 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { connectToDatabase } from "@/lib/db";
 import User from "@/models/User";
-
-
 export async function POST(request: NextRequest) {
+    console.log("OK")
     try {
         const { email, password } = await request.json()
 
@@ -39,6 +38,7 @@ export async function POST(request: NextRequest) {
 
             })
     } catch (error) {
+        console.log(error)
         return NextResponse.json(
             { error: "Failed to register User" },
             {
