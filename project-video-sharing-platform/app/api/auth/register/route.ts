@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/db";
 import User from "@/models/User";
 export async function POST(request: NextRequest) {
-    console.log("OK")
+
     try {
         const { email, password } = await request.json()
 
