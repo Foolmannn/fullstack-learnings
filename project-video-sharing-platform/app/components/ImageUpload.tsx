@@ -1,5 +1,5 @@
 "use client" // This component must be a client component
-
+import { ImageKitProvider } from "@imagekit/next";
 import {
     ImageKitAbortError,
     ImageKitInvalidRequestError,
@@ -130,5 +130,4 @@ const Upload = () => {
         </>
     );
 };
-
-export default Upload;
+export default  Upload
