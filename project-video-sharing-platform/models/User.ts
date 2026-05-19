@@ -1,100 +1,53 @@
-import mongoose, {
-    Schema,
-    model,
-    models,
-    HydratedDocument
-}
-    from "mongoose";
+import mongoose, { Schema, model, models, HydratedDocument } from "mongoose";
 
-import bcrypt
-    from "bcryptjs";
-
+import bcrypt from "bcryptjs";
 
 export interface IUser {
+  email: string;
 
-    email: string;
+  password: string;
 
-    password: string;
+  createdAt?: Date;
 
-    createdAt?: Date;
-
-    updatedAt?: Date;
-
+  updatedAt?: Date;
 }
 
+const userSchema = new Schema<IUser>(
+  {
+    email: {
+      type: String,
 
-const userSchema =
-    new Schema<IUser>(
-        {
+      required: true,
 
-            email: {
+      unique: true,
 
-                type: String,
+      lowercase: true,
 
-                required: true,
+      trim: true,
+    },
 
-                unique: true,
+    password: {
+      type: String,
 
-                lowercase: true,
+      required: true,
+    },
+  },
 
-                trim: true
-
-            },
-
-            password: {
-
-                type: String,
-
-                required: true
-
-            }
-
-        },
-
-        {
-
-            timestamps: true
-
-        }
-
-    );
-
-
-userSchema.pre(
-    "save",
-
-    async function (
-        this:
-            HydratedDocument<IUser>
-    ) {
-
-        if (
-            this.isModified(
-                "password"
-            )
-        ) {
-
-            this.password =
-                await bcrypt.hash(
-                    this.password,
-                    10
-                );
-
-        }
-
-    }
-
+  {
+    timestamps: true,
+  },
 );
 
+userSchema.pre(
+  "save",
 
-const User =
+  async function (this: HydratedDocument<IUser>) {
+    if (this.isModified("password")) {
+      this.password = await bcrypt.hash(this.password, 10);
+    }
+  },
+);
 
-    models.User ||
-
-    model<IUser>(
-        "User",
-        userSchema
-    );
-
+const User = models.User || model<IUser>("User", userSchema);
 
 export default User;

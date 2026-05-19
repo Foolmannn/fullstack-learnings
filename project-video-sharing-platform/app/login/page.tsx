@@ -1,92 +1,45 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { signIn } from "next-auth/react";
 
-export default function LoginPage() {
-    const [email, setEmail] =
-        useState("")
+import { useState } from "react";
 
-    const [password, setPassword] =
-        useState("")
+export default function Login() {
+  const [email, setEmail] = useState("");
 
-    const router = useRouter()
+  const [password, setPassword] = useState("");
 
-    async function handleLogin(
-        e: React.FormEvent
-    ) {
-        e.preventDefault()
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
 
-        const response =
-            await fetch(
-                "/api/auth/login",
-                {
-                    method: "POST",
+    await signIn(
+      "credentials",
 
-                    headers: {
-                        "Content-Type":
-                            "application/json",
-                    },
+      {
+        email,
 
-                    body:
-                        JSON.stringify({
-                            email,
-                            password,
-                        }),
-                }
-            )
+        password,
 
-        const data =
-            await response.json()
+        callbackUrl: "/",
+      },
+    );
+  }
 
-        if (response.ok) {
-            alert("Login success")
+  return (
+    <form onSubmit={handleSubmit}>
+      <input
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      />
 
-            router.push("/")
-        } else {
-            alert(data.error)
-        }
-    }
+      <input
+        type="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      />
 
-    return (
-        <div>
-            <h1>Login</h1>
-
-            <form
-                onSubmit={
-                    handleLogin
-                }
-            >
-                <input
-                    type="email"
-                    placeholder="Email"
-                    value={email}
-                    onChange={(e)=>
-                        setEmail(
-                            e.target
-                                .value
-                        )
-                    }
-                />
-
-                <input
-                    type="password"
-                    placeholder="Password"
-                    value={
-                        password
-                    }
-                    onChange={(e)=>
-                        setPassword(
-                            e.target
-                                .value
-                        )
-                    }
-                />
-
-                <button>
-                    Login
-                </button>
-            </form>
-        </div>
-    )
+      <button>Login</button>
+    </form>
+  );
 }

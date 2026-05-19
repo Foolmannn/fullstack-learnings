@@ -1,50 +1,84 @@
-// app/api/upload-auth/route.ts
+import {
+    getUploadAuthParams
+}
+from "@imagekit/next/server"
 
-import { getUploadAuthParams } from "@imagekit/next/server";
+import {
+    getServerSession
+}
+from "next-auth"
 
-import jwt from "jsonwebtoken";
-import { cookies } from "next/headers";
+import { authOptions } from "@/lib/auth"
+
+
 
 export async function GET() {
-  const userToken = (await cookies()).get("token")?.value;
 
-  if (!userToken) {
-    return Response.json(
-      {
-        error: "Unauthorized",
-      },
+    const session =
+        await
+        getServerSession(
+            authOptions
+        )
 
-      {
-        status: 401,
-      },
-    );
-  }
 
-  try {
-    jwt.verify(userToken, process.env.JWT_SECRET!);
+    if (
+        !session
+    ) {
 
-    const { token, expire, signature } = getUploadAuthParams({
-      privateKey: process.env.IMAGEKIT_PRIVATE_KEY!,
+        return Response
+            .json(
 
-      publicKey: process.env.IMAGEKIT_PUBLIC_KEY!,
-    });
+            {
+                error:
+                "Unauthorized"
+            },
 
-    return Response.json({
-      token,
-      expire,
-      signature,
+            {
+                status:
+                401
+            }
 
-      publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
-    });
-  } catch {
-    return Response.json(
-      {
-        error: "Invalid token",
-      },
+        )
 
-      {
-        status: 401,
-      },
-    );
-  }
+    }
+
+
+    const {
+
+        token,
+
+        expire,
+
+        signature
+
+    } =
+
+        getUploadAuthParams({
+
+            privateKey:
+            process.env
+            .IMAGEKIT_PRIVATE_KEY!,
+
+            publicKey:
+            process.env
+            .IMAGEKIT_PUBLIC_KEY!
+
+        })
+
+
+    return Response
+        .json({
+
+            token,
+
+            expire,
+
+            signature,
+
+            publicKey:
+            process.env
+            .IMAGEKIT_PUBLIC_KEY
+
+        })
+
 }

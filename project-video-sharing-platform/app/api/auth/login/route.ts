@@ -1,57 +1,76 @@
-import bcrypt from "bcryptjs"
-import jwt from "jsonwebtoken"
-import User from "@/models/User"
-import { cookies } from "next/headers"
+// import bcrypt from "bcryptjs";
+// import jwt from "jsonwebtoken";
+// import { cookies } from "next/headers";
 
-export async function POST(req: Request) {
-    const { email, password } =
-        await req.json()
+// import User from "@/models/User";
+// import { connectToDatabase } from "@/lib/db";
 
-    const user =
-        await User.findOne({ email })
+// export async function POST(request: Request) {
+//   const { email, password } = await request.json();
 
-    if (!user) {
-        return Response.json(
-            { error: "User not found" },
-            { status: 404 }
-        )
-    }
+//   await connectToDatabase();
 
-    const valid =
-        await bcrypt.compare(
-            password,
-            user.password
-        )
+//   const user = await User.findOne({
+//     email,
+//   });
 
-    if (!valid) {
-        return Response.json(
-            { error: "Wrong password" },
-            { status: 401 }
-        )
-    }
+//   if (!user) {
+//     return Response.json(
+//       {
+//         error: "User not found",
+//       },
 
-    const token =
-        jwt.sign(
-            { userId: user._id },
-            process.env.JWT_SECRET!,
-            { expiresIn: "7d" }
-        )
+//       {
+//         status: 404,
+//       },
+//     );
+//   }
 
-    ;(await cookies()).set(
-        "token",
-        token,
-        {
-            httpOnly: true,
-            secure:
-                process.env.NODE_ENV ===
-                "production",
-            sameSite: "strict",
-            maxAge:
-                60 * 60 * 24 * 7,
-        }
-    )
+//   const valid = await bcrypt.compare(
+//     password,
 
-    return Response.json({
-        success: true
-    })
-}
+//     user.password,
+//   );
+
+//   if (!valid) {
+//     return Response.json(
+//       {
+//         error: "Wrong password",
+//       },
+
+//       {
+//         status: 401,
+//       },
+//     );
+//   }
+
+//   const token = jwt.sign(
+//     {
+//       userId: user._id,
+//     },
+
+//     process.env.JWT_SECRET!,
+
+//     {
+//       expiresIn: "7d",
+//     },
+//   );
+
+//   (await cookies()).set(
+//     "token",
+
+//     token,
+
+//     {
+//       httpOnly: true,
+
+//       secure: process.env.NODE_ENV === "production",
+
+//       sameSite: "strict",
+//     },
+//   );
+
+//   return Response.json({
+//     message: "Login success",
+//   });
+// }
