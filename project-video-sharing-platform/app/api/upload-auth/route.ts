@@ -1,84 +1,43 @@
-import {
-    getUploadAuthParams
-}
-from "@imagekit/next/server"
+import { getUploadAuthParams } from "@imagekit/next/server";
 
-import {
-    getServerSession
-}
-from "next-auth"
+import { getServerSession } from "next-auth";
 
-import { authOptions } from "@/lib/auth"
-
-
+import { authOptions } from "@/lib/auth";
 
 export async function GET() {
+    const session = await getServerSession(authOptions);
 
-    const session =
-        await
-        getServerSession(
-            authOptions
-        )
-
-
-    if (
-        !session
-    ) {
-
-        return Response
-            .json(
-
+    if (!session) {
+        return Response.json(
             {
-                error:
-                "Unauthorized"
+                error: "Unauthorized",
             },
 
             {
-                status:
-                401
-            }
-
-        )
-
+                status: 401,
+            },
+        );
     }
 
-
     const {
-
         token,
 
         expire,
 
-        signature
+        signature,
+    } = getUploadAuthParams({
+        privateKey: process.env.IMAGEKIT_PRIVATE_KEY!,
 
-    } =
+        publicKey: process.env.IMAGEKIT_PUBLIC_KEY!,
+    });
 
-        getUploadAuthParams({
+    return Response.json({
+        token,
 
-            privateKey:
-            process.env
-            .IMAGEKIT_PRIVATE_KEY!,
+        expire,
 
-            publicKey:
-            process.env
-            .IMAGEKIT_PUBLIC_KEY!
+        signature,
 
-        })
-
-
-    return Response
-        .json({
-
-            token,
-
-            expire,
-
-            signature,
-
-            publicKey:
-            process.env
-            .IMAGEKIT_PUBLIC_KEY
-
-        })
-
+        publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
+    });
 }
