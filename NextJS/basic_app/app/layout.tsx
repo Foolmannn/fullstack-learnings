@@ -23,7 +23,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        
+        {/* This is from the main layout  */}
+        {/* This will so on every route : This allows us to share the similar component on every page like Header/ Navbar / footers  */}
+        {children}
+        </body>
     </html>
   );
 }

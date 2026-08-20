@@ -1,7 +1,6 @@
 
 > **JavaScript + a static type system + better tooling = TypeScript**
 
-I'll explain it by continuously comparing **JavaScript → TypeScript**, with examples that are useful for **full-stack development, React, Next.js, Node.js, APIs, and backend development**.
 
 # TypeScript — Detailed Notes for a JavaScript Developer
 

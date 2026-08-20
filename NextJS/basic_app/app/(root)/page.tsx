@@ -1,4 +1,4 @@
-import Hello from "../components/Hello"
+import Hello from "../../components/Hello"
 
 const Home = () => {
   // By default the every components are the SERVER COMPONENTS
