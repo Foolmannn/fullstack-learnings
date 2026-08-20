@@ -742,3 +742,592 @@ Sort: price
 ```
 
 ---
+
+# 15. Reading query parameters in Client Components
+
+Use `useSearchParams`.
+
+```tsx
+"use client";
+
+import { useSearchParams } from "next/navigation";
+
+export default function Products() {
+  const searchParams = useSearchParams();
+
+  const category = searchParams.get("category");
+
+  return <p>Category: {category}</p>;
+}
+```
+
+For:
+
+```text
+/products?category=phone
+```
+
+you get:
+
+```text
+phone
+```
+
+---
+
+# 16. Dynamic params vs query params
+
+This distinction is very important.
+
+### Dynamic route
+
+```text
+/products/123
+```
+
+Folder:
+
+```text
+products/[id]
+```
+
+Parameter:
+
+```text
+id = 123
+```
+
+### Query parameter
+
+```text
+/products?id=123
+```
+
+Folder:
+
+```text
+products
+```
+
+Parameter:
+
+```text
+id = 123
+```
+
+They are different mechanisms.
+
+Generally:
+
+```text
+/products/123
+```
+
+is useful when `123` identifies the resource itself.
+
+```text
+/products?category=phones
+```
+
+is useful for filtering, searching, sorting, pagination, etc.
+
+---
+
+# 17. Route handlers / API routes
+
+Next.js routing isn't only for UI pages.
+
+You can create backend API endpoints using `route.ts`.
+
+Example:
+
+```text
+app/
+└── api/
+    └── users/
+        └── route.ts
+```
+
+This creates:
+
+```text
+/api/users
+```
+
+Example:
+
+```tsx
+import { NextResponse } from "next/server";
+
+export async function GET() {
+  return NextResponse.json({
+    users: ["John", "Alice"],
+  });
+}
+```
+
+Now:
+
+```text
+GET /api/users
+```
+
+returns JSON.
+
+You can also handle POST:
+
+```tsx
+export async function POST(request: Request) {
+  const body = await request.json();
+
+  return NextResponse.json({
+    message: "User created",
+    data: body,
+  });
+}
+```
+
+So:
+
+```text
+app/api/users/route.ts
+```
+
+can contain:
+
+```text
+GET
+POST
+PUT
+PATCH
+DELETE
+```
+
+handlers.
+
+---
+
+# 18. Static and dynamic routes
+
+Next.js can determine whether a route can be statically rendered or needs dynamic behavior based on what the route does and the APIs it uses.
+
+For example:
+
+```tsx
+export default function About() {
+  return <h1>About</h1>;
+}
+```
+
+doesn't require request-specific information.
+
+But a route that depends on request-specific data, such as certain cookies or headers, may need dynamic rendering.
+
+This is one reason the App Router is more than simply "folders become URLs": **rendering behavior is integrated with the routing system.**
+
+---
+
+# 19. Loading UI
+
+You can create:
+
+```text
+app/
+└── dashboard/
+    ├── page.tsx
+    └── loading.tsx
+```
+
+`loading.tsx` provides a loading UI while the route's content is being loaded.
+
+Example:
+
+```tsx
+export default function Loading() {
+  return <p>Loading dashboard...</p>;
+}
+```
+
+This is especially useful when your page performs asynchronous data fetching.
+
+---
+
+# 20. Error handling
+
+You can also create:
+
+```text
+app/
+└── dashboard/
+    ├── page.tsx
+    └── error.tsx
+```
+
+Example:
+
+```tsx
+"use client";
+
+export default function Error({
+  reset,
+}: {
+  error: Error & { digest?: string };
+  reset: () => void;
+}) {
+  return (
+    <div>
+      <h2>Something went wrong.</h2>
+
+      <button onClick={() => reset()}>
+        Try again
+      </button>
+    </div>
+  );
+}
+```
+
+`error.tsx` must be a Client Component.
+
+---
+
+# 21. Not-found routes
+
+You can create:
+
+```text
+app/
+└── not-found.tsx
+```
+
+for a global not-found UI.
+
+You can also have route-specific `not-found.tsx` files.
+
+For example:
+
+```tsx
+import { notFound } from "next/navigation";
+
+export default async function ProductPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+
+  const product = await getProduct(id);
+
+  if (!product) {
+    notFound();
+  }
+
+  return <h1>{product.name}</h1>;
+}
+```
+
+If the product doesn't exist, Next.js renders the appropriate not-found UI.
+
+---
+
+# 22. Redirects
+
+You can redirect from a Server Component or server-side code using `redirect`.
+
+```tsx
+import { redirect } from "next/navigation";
+
+export default function Dashboard() {
+  const isLoggedIn = false;
+
+  if (!isLoggedIn) {
+    redirect("/login");
+  }
+
+  return <h1>Dashboard</h1>;
+}
+```
+
+The flow is:
+
+```text
+/dashboard
+     ↓
+Is user logged in?
+     ↓
+   No
+     ↓
+/login
+```
+
+For permanent/temporary URL redirects at the configuration level, Next.js also supports redirects in `next.config.js`.
+
+---
+
+# 23. Middleware / Proxy-style request handling
+
+Historically, Next.js has used `middleware.ts` for request interception. In newer Next.js versions, the request interception feature is being transitioned toward the `proxy.ts` convention.
+
+The idea is that a request can be inspected before it reaches the route.
+
+Typical use cases include:
+
+```text
+Authentication
+Authorization
+Redirects
+Rewrites
+Locale detection
+Request-based routing
+```
+
+For example, conceptually:
+
+```text
+Request
+   ↓
+Proxy / middleware
+   ↓
+Check authentication
+   ↓
+Route
+```
+
+The exact APIs and conventions depend on the Next.js version you're using, so this is one area where checking the current Next.js documentation is worthwhile.
+
+---
+
+# 24. Parallel routes
+
+App Router supports **parallel routes**, which allow multiple UI sections to be rendered independently within the same layout.
+
+You use `@folder` syntax.
+
+Example:
+
+```text
+app/
+└── dashboard/
+    ├── layout.tsx
+    ├── page.tsx
+    ├── @analytics/
+    │   └── page.tsx
+    └── @team/
+        └── page.tsx
+```
+
+You can think of it as:
+
+```text
+Dashboard
+├── Analytics
+└── Team
+```
+
+being rendered as separate route slots.
+
+This is useful for complex dashboards and independently navigable UI sections.
+
+---
+
+# 25. Intercepting routes
+
+App Router also supports **intercepting routes**.
+
+These are useful for patterns such as:
+
+```text
+Gallery
+   ↓
+Click image
+   ↓
+Open image as modal
+```
+
+while still having a real URL for the image page.
+
+The special folder conventions include:
+
+```text
+(.)
+(..)
+(..)(..)
+(...)
+```
+
+They allow one route to intercept another route's rendering within a particular navigation context.
+
+This is an advanced feature, but it's particularly useful for modal-based navigation.
+
+---
+
+# 26. Route groups + layouts
+
+A real application might look like:
+
+```text
+app/
+├── layout.tsx
+│
+├── (marketing)/
+│   ├── layout.tsx
+│   ├── page.tsx
+│   ├── about/
+│   │   └── page.tsx
+│   └── pricing/
+│       └── page.tsx
+│
+└── (dashboard)/
+    ├── layout.tsx
+    ├── dashboard/
+    │   ├── page.tsx
+    │   ├── settings/
+    │   │   └── page.tsx
+    │   └── users/
+    │       └── page.tsx
+```
+
+URLs:
+
+```text
+/
+/about
+/pricing
+/dashboard
+/dashboard/settings
+/dashboard/users
+```
+
+Notice that:
+
+```text
+(marketing)
+(dashboard)
+```
+
+don't appear in the URL.
+
+This is a very common way to structure larger applications.
+
+---
+
+# 27. Complete example
+
+Imagine you're building an e-commerce application.
+
+You might structure it like this:
+
+```text
+app/
+│
+├── layout.tsx
+├── page.tsx
+│
+├── products/
+│   ├── page.tsx
+│   └── [id]/
+│       └── page.tsx
+│
+├── categories/
+│   └── [category]/
+│       └── page.tsx
+│
+├── cart/
+│   └── page.tsx
+│
+├── account/
+│   ├── layout.tsx
+│   ├── page.tsx
+│   ├── orders/
+│   │   └── page.tsx
+│   └── settings/
+│       └── page.tsx
+│
+└── api/
+    └── products/
+        └── route.ts
+```
+
+This gives:
+
+```text
+/                           Home
+/products                   All products
+/products/123               Product 123
+/categories/electronics    Electronics
+/cart                       Cart
+/account                    Account
+/account/orders             Orders
+/account/settings           Settings
+/api/products               Products API
+```
+
+That's the core mental model you need.
+
+---
+
+# 28. App Router vs Pages Router
+
+Next.js has two routing systems.
+
+| Feature                  | App Router              | Pages Router          |
+| ------------------------ | ----------------------- | --------------------- |
+| Directory                | `app/`                  | `pages/`              |
+| Main page file           | `page.tsx`              | `index.tsx`           |
+| Dynamic route            | `[id]`                  | `[id]`                |
+| Layout system            | Built-in nested layouts | Usually custom        |
+| Server Components        | Supported               | Not the same model    |
+| Route handlers           | `route.ts`              | API routes            |
+| Loading UI               | `loading.tsx`           | Usually custom        |
+| Error UI                 | `error.tsx`             | `_error.tsx` / custom |
+| Recommended for new apps | Yes                     | Mainly existing apps  |
+
+If you're learning Next.js today, **learn the App Router first**.
+
+---
+
+# 29. The most important routing concepts
+
+If you're preparing for interviews or building projects, understand these especially well:
+
+```text
+1. Static routes
+2. Nested routes
+3. Dynamic routes
+4. Catch-all routes
+5. Optional catch-all routes
+6. Route groups
+7. Layouts
+8. Link navigation
+9. Programmatic navigation
+10. Query parameters
+11. Route handlers
+12. Loading states
+13. Error handling
+14. notFound()
+15. redirect()
+16. Parallel routes
+17. Intercepting routes
+18. Authentication/authorization around routes
+```
+
+The fundamental pattern to remember is:
+
+```text
+app/
+│
+├── page.tsx                  → /
+│
+├── about/
+│   └── page.tsx              → /about
+│
+├── products/
+│   ├── page.tsx              → /products
+│   └── [id]/
+│       └── page.tsx          → /products/:id
+│
+└── blog/
+    └── [...slug]/
+        └── page.tsx          → /blog/*
+```
+
+Once this folder-to-URL relationship is clear, most Next.js routing becomes much easier to understand.
