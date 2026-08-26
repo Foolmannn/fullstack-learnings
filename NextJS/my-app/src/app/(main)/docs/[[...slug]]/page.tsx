@@ -1,5 +1,9 @@
 // CATCH ALL SEGMENTS 
 
+export const metadata={
+    title:"DOCS PAGE"  // this will be added in the template from the root layout metadata 
+}
+
 export default async function Docs(
     
     {params,} : {

@@ -11,8 +11,21 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+// Title as Simple string 
+// export const metadata: Metadata = {
+//   title: "Welcome to First Next App.",
+//   description: "Learning Next js ",
+// };
+
+
+// Title as Object
 export const metadata: Metadata = {
-  title: "Welcome to First Next App.",
+  title: {
+    default:"basic next js app",
+    template:"%s | Basic web app ", // this %s will be replaced by the title set on the components  // visit docs page
+    // absolute:"Blog", if set to the child it will overwrite the parent layout  // visit blog page 
+
+  },
   description: "Learning Next js ",
 };
 
