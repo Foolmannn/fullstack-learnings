@@ -1,7 +1,7 @@
 
 // NESTED DYNAMIC ROUTES
 
-import { notFound } from "next/navigation"; 
+import { notFound , redirect} from "next/navigation"; 
 // Triggering the not found with the logic . It will show the closet not-found component created 
 
 export default async function ProductReview({params}:{
@@ -10,7 +10,8 @@ export default async function ProductReview({params}:{
     const {productId,reviewId} = await params
 
     if (parseInt(reviewId) > 1000){
-     notFound();
+    //  notFound();
+    redirect('/products')
     }
 
     return <h1>Review {reviewId} for Product {productId}</h1>

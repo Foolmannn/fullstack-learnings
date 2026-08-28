@@ -1,6 +1,6 @@
 "use client"
 
-import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation" // not next/router it is for the page router 
 
 
 export default function OrderProduct(){
@@ -8,6 +8,8 @@ export default function OrderProduct(){
     const handleClick = () =>{
         console.log("Placing your order")
         router.push('/');
+        // router.replace('/');
+        // router.back();
         
     }
     return (
