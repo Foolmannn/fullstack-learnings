@@ -8,6 +8,7 @@ import '../globals.css'
 import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,12 +33,16 @@ const navLinks = [
 
 export default function AuthLayout({ children }: LayoutProps<"/">) {
   const pathname = usePathname()
+  const [input, setInput] = useState("")
   return (
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        <div>
+          <input value={input} onChange={(e)=>setInput(e.target.value)}/>
+        </div>
         {navLinks.map((link)=>{
           const isActive = pathname === link.href || (pathname.startsWith(link.href) && link.href !=='/')
           return (
