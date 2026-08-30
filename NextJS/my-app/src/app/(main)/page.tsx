@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+// Slots are not route segments 
 
 import Link from "next/link";
 

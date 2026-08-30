@@ -1,5 +1,7 @@
 'use client'
-// This will not handle the error on the layout of the same segment so We need to move erro .tsx to the parent directory to handle the child layout errors
+// THIS WILL NOT HANDLE THE ERROR ON THE LAYOUT OF THE SAME SEGMENT SO WE NEED TO MOVE ERRO .TSX TO THE PARENT DIRECTORY TO HANDLE THE CHILD LAYOUT ERRORS
+
+// AND FOR THOSE WHO DOESNOT HAVE THE PARENT LEVEL IE THEY ARE AT THE HIGHEST LEVEL WE NEED THE GLOBAL ERROR. TSX FILE 
 
 
 import { useRouter } from 'next/navigation';
